@@ -22,10 +22,10 @@ jobs:
           username: _json_key
           password: ${{ secrets.GCP_SA_KEY }}
       - name: Build and Push docker
-          uses: docker/build-push-action@v2
-          with:
-            context: ./
-            file: ./Dockerfile
-            push: true
-            tags: |
-              asia.gcr.io/be-nitta-kazuki/streamlit:${{ github.sha }}
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          file: ./Dockerfile
+          push: true
+          tags: |
+            asia.gcr.io/be-nitta-kazuki/streamlit:${{ github.sha }}
