@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: streamlit-app
-          image: asia.gcr.io/be-nitta-kazuki/streamlit-app:latest
+          image: asia.gcr.io/be-nitta-kazuki/streamlit-app:5c12cb6c78840d8e244f2690a993d97128e816bb
           ports:
             - containerPort: 8501
               protocol: TCP
