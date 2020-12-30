@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+metadata:
+  name: streamlit-app
+  namespace: analysis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: streamlit-app
+  template:
+    metadata:
+      labels:
+        app: streamlit-app
+    spec:
+      containers:
+        - name: streamlit-app
+          image: asia.gcr.io/be-nitta-kazuki/streamlit-app:latest
+          ports:
+            - containerPort: 8501
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8501
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8501
