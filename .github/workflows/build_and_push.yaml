@@ -32,7 +32,7 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            asia.gcr.io/be-nitta-kazuki/streamlit:${{ github.sha }}
+            asia.gcr.io/be-nitta-kazuki/streamlit-app:${{ github.sha }}
 
   create_pr:
     needs: build_and_push
