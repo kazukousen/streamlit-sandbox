@@ -13,6 +13,7 @@ spec:
       labels:
         app: streamlit-app
     spec:
+      serviceAccountName: streamlit-app
       containers:
         - name: streamlit-app
           image: asia.gcr.io/be-nitta-kazuki/streamlit-app:d53d3819be24dfeb0961a417beb3601aee6ee4f0
