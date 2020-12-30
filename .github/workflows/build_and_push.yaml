@@ -33,3 +33,35 @@ jobs:
           push: true
           tags: |
             asia.gcr.io/be-nitta-kazuki/streamlit:${{ github.sha }}
+
+  create_pr:
+    needs: build_and_push
+    if: ${{ github.event_name != 'pull_request' }}
+    runs-on: ubuntu-latest
+    env:
+      REGISTRY_ENDPOINT: asia.gcr.io/be-nitta-kazuki
+      TARGET_MANIFEST: kubernetes/app.yaml
+      IMAGE_NAME: streamlit-app
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set outputs
+        id: vars
+        run: |
+          echo "::set-output name=image_tag::${{ github.sha }}"
+      - name: Update image tag
+        id: modify
+        run: |
+          CURRENT_TAG=$(grep "${{ env.REGISTRY_ENDPOINT }}/${{ env.IMAGE_NAME }}:[a-z0-9-]*" "${{ env.TARGET_MANIFEST }}" | sed "s|.*${{ env.REGISTRY_ENDPOINT }}/${{ env.IMAGE_NAME }}:||g" | tr '\n' '\0')
+          sed -i "s|${{ env.REGISTRY_ENDPOINT }}/${{ env.IMAGE_NAME }}:${CURRENT_TAG}|${{ env.REGISTRY_ENDPOINT }}/${{ env.IMAGE_NAME }}:${{ steps.vars.outputs.image_tag }}|g" "${{ env.TARGET_MANIFEST }}"
+          echo "::set-output name=current_tag::${CURRENT_TAG}"
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          commit-message: Update image tag ${{ env.REGISTRY_ENDPOINT }}-${{ env.IMAGE_NAME }}
+          title: Update image tag ${{ env.REGISTRY_ENDPOINT }}-${{ env.IMAGE_NAME }}
+          body: |
+            Update image tag on ${{ env.TARGET_MANIFEST }}
+            Changed https://github.com/${{ github.repository }}/compare/${{ steps.modify.outputs.current_tag }}...${{ steps.vars.outputs.image_tag }}
+          branch: ${{ env.REGISTRY_ENDPOINT }}-${{ env.IMAGE_NAME }}
+          base: main
